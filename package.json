@@ -1,17 +1,17 @@
 {
   "name": "gestao-financeira-api",
   "version": "1.0.0",
-  "main": "src/app.ts",
+  "main": "dist/app.js",
   "scripts": {
     "start": "node dist/app.js",
     "build": "tsc",
-    "dev": "nodemon src/app.ts --exec ts-node"
+    "dev": "nodemon --exec ts-node ./src/app.ts"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
-    "multer": "^2.0.2",
+    "multer": "^2.1.1",
     "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
     "typeorm": "^0.3.28"
@@ -20,7 +20,7 @@
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.3",
     "@types/jsonwebtoken": "^9.0.6",
-    "@types/multer": "^2.0.0",
+    "@types/multer": "^2.1.0",
     "@types/node": "^24.3.0",
     "nodemon": "^3.1.10",
     "ts-node": "^10.9.2",
