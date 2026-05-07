@@ -23,6 +23,7 @@ router.use(authMiddleware);
 
 router.post("/", upload.single("comprovante"), controller.inserir);
 router.get("/meu-extrato", controller.listarLogado); // Alterado para segurança
-router.get("/meu-saldo", controller.obterSaldoLogado); // Alterado para segurança
+router.get("/meu-saldo", controller.obterSaldoLogado); // Alterado para 
+router.delete("/:id", controller.deletar);// deleta as transações, mas só as do usuário logado
 
 export default router;

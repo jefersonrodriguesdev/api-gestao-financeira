@@ -41,4 +41,26 @@ export class TransacaoService {
             totalTransacoes: transacoes.length 
         };
     }
+    async deletar(id: number, usuarioId: number) {
+
+    const transacao = await this.repo.findOne({
+        where: {
+            id,
+            usuario: {
+                id: usuarioId
+            }
+        }
+    }
+    );
+
+    if (!transacao) {
+        throw new Error("Transação não encontrada");//deleta ass contas 
+    }
+
+    await this.repo.remove(transacao);
+
+    return {
+        message: "Transação removida com sucesso"
+    };
+}
 }
