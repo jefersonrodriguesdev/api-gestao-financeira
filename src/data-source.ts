@@ -8,9 +8,9 @@ export const AppDataSource = new DataSource({
     host: "localhost",
     port: 5432,
     username: "postgres",
-    password: "1012", // Ajuste conforme seu banco
+    password: "0510", 
     database: "gestao_financeira",
     entities: [Usuario, Categoria, Transacao],
-    synchronize: true, // Ótimo para desenvolvimento
+    synchronize: true, 
     logging: true,
 });
