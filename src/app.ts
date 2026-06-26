@@ -4,6 +4,7 @@ import { AppDataSource } from "./data-source";
 import authRouter from "./router/auth-router";
 import transacaoRouter from "./router/transacao-router";
 import categoriaRouter from "./router/categoria-router";
+import tagRouter from "./router/tag-router";
 
 const app = express();
 
@@ -13,6 +14,7 @@ AppDataSource.initialize().then(() => {
     app.use("/api/auth", authRouter);
     app.use("/api/transacoes", transacaoRouter);
     app.use("/api/categorias", categoriaRouter);
+    app.use("/api/tags", tagRouter);
 
     app.listen(3000, () => {
         console.log("Servidor de Gestão Financeira rodando na porta 3000");

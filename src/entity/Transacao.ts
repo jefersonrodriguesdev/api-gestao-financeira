@@ -1,12 +1,7 @@
-import {
-    Entity,
-    PrimaryGeneratedColumn,
-    Column,
-    ManyToOne
-} from "typeorm";
-
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, ManyToMany, JoinTable } from "typeorm";
 import { Usuario } from "./Usuario";
 import { Categoria } from "./Categoria";
+import { Tag } from "./Tag";
 
 @Entity()
 export class Transacao {
@@ -31,4 +26,8 @@ export class Transacao {
 
     @ManyToOne(() => Categoria)
     categoria!: Categoria;
+
+    @ManyToMany(() => Tag)
+    @JoinTable() 
+    tags!: Tag[];
 }
