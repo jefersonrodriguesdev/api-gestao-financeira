@@ -1,99 +1,39 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { TransacaoService } from "../service/TransacaoService";
+import { AuthRequest } from "../middleware/auth-middleware";
 
 export class TransacaoController {
-
     private service = new TransacaoService();
 
-    inserir = async (req: Request, res: Response) => {
+    criar = async (req: AuthRequest, res: Response) => {
+        const usuarioId = req.user!.id; 
+        const { descricao, valor, categoriaId, tags } = req.body;
+        
+        const comprovantePath = req.file?.path || null;
 
-        try {
+        const novaTransacao = await this.service.criar({
+            usuarioId,
+            descricao,
+            valor,
+            categoriaId,
+            tags,
+            comprovantePath
+        });
 
-            const dados = req.body;
-
-            dados.usuario = {
-                id: (req as any).user.id
-            };
-
-            dados.categoria = {
-                id: Number(req.body.categoria)
-            };
-
-            if (req.file) {
-                dados.comprovantePath = req.file.path;
-            }
-
-            const nova = await this.service.lancar(dados);
-
-            return res.status(201).json(nova);
-
-        } catch (err: any) {
-
-            return res.status(500).json({
-                error: err.message || "Erro ao lançar transação"
-            });
-        }
+        return res.status(201).json(novaTransacao);
     };
 
-    listarLogado = async (req: Request, res: Response) => {
-
-        try {
-
-            const usuarioId = (req as any).user.id;
-
-            const transacoes =
-                await this.service.listarPorUsuario(usuarioId);
-
-            return res.json(transacoes);
-
-        } catch (err: any) {
-
-            return res.status(500).json({
-                error: "Erro ao listar transações"
-            });
-        }
+    listar = async (req: AuthRequest, res: Response) => {
+        const usuarioId = req.user!.id;
+        const transacoes = await this.service.listarPorUsuario(usuarioId);
+        return res.json(transacoes);
     };
 
-    obterSaldoLogado = async (
-        req: Request,
-        res: Response
-    ) => {
-
-        try {
-
-            const usuarioId = (req as any).user.id;
-
-            const saldo =
-                await this.service.calcularSaldo(usuarioId);
-
-            return res.json(saldo);
-
-        } catch (err: any) {
-
-            return res.status(500).json({
-                error: "Erro ao calcular saldo"
-            });
-        }
-    };
-//deleta as transações, mas só as do usuário logado
-    deletar = async (req: Request, res: Response) => {
-
-        try {
-
-            const id = Number(req.params.id);
-
-            const usuarioId = (req as any).user.id;
-
-            const resultado =
-                await this.service.deletar(id, usuarioId);
-
-            return res.json(resultado);
-
-        } catch (err: any) {
-
-            return res.status(500).json({
-                error: err.message
-            });
-        }
+    deletar = async (req: AuthRequest, res: Response) => {
+        const usuarioId = req.user!.id;
+        const transacaoId = Number(req.params.id);
+        
+        await this.service.deletar(transacaoId, usuarioId);
+        return res.status(204).send();
     };
 }
