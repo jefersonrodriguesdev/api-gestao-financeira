@@ -1,8 +1,11 @@
 import { Router } from "express";
-import { AuthController } from "../controller/auth-controller";
+import { UsuarioController } from "../controller/UsuarioController";
+import { validate } from "../middleware/validate-middleware";
+import { usuarioSchema } from "../schemas/usuario-schema";
 
-export const usuarioRouter = Router();
-const authController = new AuthController();    
+const router = Router();
+const controller = new UsuarioController();
 
-usuarioRouter.post("/auth/login", (req, res) => authController.login(req, res));
+router.post("/", validate(usuarioSchema), controller.criar);
 
+export default router;
