@@ -18,7 +18,7 @@ export const errorMiddleware = (
     if (err instanceof ZodError) {
         return res.status(400).json({
             status: "validation_error",
-            errors: err.issues.map((e: ZodIssue) => ({
+            errors: err.issues.map((e: z.ZodIssue) => ({
                 campo: e.path.join("."),
                 mensagem: e.message,
             })),
