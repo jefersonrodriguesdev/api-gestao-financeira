@@ -1,25 +1,37 @@
 import { AppDataSource } from "../data-source";
 import { Transacao } from "../entity/Transacao";
+import { AppError } from "../errors/AppError";
 
 export class TransacaoService {
     private repo = AppDataSource.getRepository(Transacao);
 
-    async lancar(dados: Partial<Transacao>): Promise<Transacao> {
-        if (!dados.valor || !dados.categoria) {
-            throw { id: 400, msg: "Valor e Categoria são obrigatórios" };
+    async criar(dados: any): Promise<Transacao> {
+        if (!dados.valor || !dados.categoriaId) {
+            throw new AppError("Valor e Categoria são obrigatórios", 400);
         }
-        
-        // Garante que a data seja gravada se não enviada
-        if (!dados.data) dados.data = new Date();
 
-        return await this.repo.save(dados as Transacao);
+        if (dados.valor <= 0) {
+            throw new AppError("O valor da transação deve ser maior que zero", 400);
+        }
+
+        const transacao = this.repo.create({
+            descricao: dados.descricao,
+            valor: dados.valor,
+            comprovantePath: dados.comprovantePath,
+            tags: dados.tags,
+            usuario: { id: dados.usuarioId },
+            categoria: { id: dados.categoriaId },
+            data: dados.data || new Date(),
+        } as Transacao);
+
+        return await this.repo.save(transacao);
     }
 
     async listarPorUsuario(usuarioId: number): Promise<Transacao[]> {
         return await this.repo.find({
             where: { usuario: { id: usuarioId } },
-            relations: ["categoria"],
-            order: { data: "DESC" } // Organiza por data mais recente
+            relations: ["categoria", "tags"],
+            order: { data: "DESC" }
         });
     }
 
@@ -30,37 +42,26 @@ export class TransacaoService {
         });
 
         const saldo = transacoes.reduce((acc, t) => {
-            // Converte para Number para evitar erros de string no decimal
             const valor = Number(t.valor);
             return t.categoria.tipo === "entrada" ? acc + valor : acc - valor;
         }, 0);
 
-        return { 
+        return {
             usuarioId,
             saldo: saldo.toFixed(2),
-            totalTransacoes: transacoes.length 
+            totalTransacoes: transacoes.length
         };
     }
-    async deletar(id: number, usuarioId: number) {
 
-    const transacao = await this.repo.findOne({
-        where: {
-            id,
-            usuario: {
-                id: usuarioId
-            }
+    async deletar(id: number, usuarioId: number): Promise<void> {
+        const transacao = await this.repo.findOne({
+            where: { id, usuario: { id: usuarioId } }
+        });
+
+        if (!transacao) {
+            throw new AppError("Transação não encontrada ou acesso negado", 404);
         }
+
+        await this.repo.remove(transacao);
     }
-    );
-
-    if (!transacao) {
-        throw new Error("Transação não encontrada");//deleta ass contas 
-    }
-
-    await this.repo.remove(transacao);
-
-    return {
-        message: "Transação removida com sucesso"
-    };
-}
 }

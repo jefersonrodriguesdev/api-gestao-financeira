@@ -1,29 +1,28 @@
 import { Router } from "express";
-import multer from "multer";
-import path from "path";
 import { TransacaoController } from "../controller/TransacaoController";
 import { authMiddleware } from "../middleware/auth-middleware";
+import { validate } from "../middleware/validate-middleware";
+import { transacaoSchema } from "../schemas/transacao-schema";
 
-// Configuração para manter extensão original e nome único
+import multer from "multer";
+import path from "path";
+
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, "./my-uploads");
-    },
+    destination: (req, file, cb) => cb(null, "uploads/"),
     filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname));
     }
 });
-
 const upload = multer({ storage });
+
 const router = Router();
 const controller = new TransacaoController();
 
 router.use(authMiddleware);
 
-router.post("/", upload.single("comprovante"), controller.inserir);
-router.get("/meu-extrato", controller.listarLogado); // Alterado para segurança
-router.get("/meu-saldo", controller.obterSaldoLogado); // Alterado para 
-router.delete("/:id", controller.deletar);// deleta as transações, mas só as do usuário logado
+router.post("/", upload.single("comprovante"), validate(transacaoSchema), controller.criar);
+router.get("/", controller.listar);
+router.delete("/:id", controller.deletar);
 
 export default router;
