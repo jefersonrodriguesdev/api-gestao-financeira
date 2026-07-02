@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../errors/AppError";
-import { ZodError } from "zod";
+import { ZodError, z } from "zod";
 
 export const errorMiddleware = (
     err: Error,
@@ -18,7 +18,7 @@ export const errorMiddleware = (
     if (err instanceof ZodError) {
         return res.status(400).json({
             status: "validation_error",
-            errors: err.errors.map((e) => ({
+            errors: err.issues.map((e: ZodIssue) => ({
                 campo: e.path.join("."),
                 mensagem: e.message,
             })),
