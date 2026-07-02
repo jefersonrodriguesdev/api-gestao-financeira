@@ -16,7 +16,15 @@ export class UsuarioService {
         const usuario = this.repo.create({ nome, email, senha: senhaHash });
         await this.repo.save(usuario);
 
+        // Retorna o usuário sem a senha para segurança
         const { senha: _, ...usuarioSemSenha } = usuario;
         return usuarioSemSenha;
+    }
+
+    async listar() {
+        const usuarios = await this.repo.find();
+        
+        // Mapeia a lista para remover a senha de todos os usuários por segurança
+        return usuarios.map(({ senha, ...usuarioSemSenha }) => usuarioSemSenha);
     }
 }
