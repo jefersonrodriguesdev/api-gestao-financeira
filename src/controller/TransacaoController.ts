@@ -7,16 +7,25 @@ export class TransacaoController {
 
     criar = async (req: AuthRequest, res: Response) => {
         const usuarioId = req.user!.id; 
-        const { descricao, valor, categoriaId, tags } = req.body;
         
-        const comprovantePath = req.file?.path || null;
+        const descricao = req.body.descricao;
+        const valor = Number(req.body.valor);
+        const categoriaId = Number(req.body.categoriaId);
+        
+        let tagsFormatadas = [];
+        if (req.body.tags) {
+            const tagsArray = JSON.parse(req.body.tags);
+            tagsFormatadas = tagsArray.map((id: number) => ({ id }));
+        }
+        
+        const comprovantePath = req.file ? req.file.filename : null;
 
         const novaTransacao = await this.service.criar({
             usuarioId,
             descricao,
             valor,
             categoriaId,
-            tags,
+            tags: tagsFormatadas,
             comprovantePath
         });
 
