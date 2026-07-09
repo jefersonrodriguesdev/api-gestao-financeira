@@ -2,8 +2,9 @@ import multer from "multer";
 import path from "path";
 import crypto from "crypto";
 import fs from "fs";
+import os from "os"; // 🟢 
 
-const uploadDir = path.join(process.cwd(), "uploads");
+const uploadDir = path.join(os.tmpdir(), "gestao-uploads");
 
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
