@@ -20,7 +20,10 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
     }
 
     try {
-        const decoded = jwt.verify(token, "CHAVE_SECRETA_SENAC") as { id: number, email: string };
+        const decoded = jwt.verify(
+            token, 
+            process.env.JWT_SECRET || "CHAVE_SECRETA_SENAC"
+        ) as { id: number, email: string };
         (req as any).user = decoded;
         next();
     } catch (err) {
