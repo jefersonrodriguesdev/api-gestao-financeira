@@ -1,9 +1,12 @@
 import { AppDataSource } from "../data-source";
 import { Transacao } from "../entity/Transacao";
+import { Tag } from "../entity/Tag"; // 
+import { In } from "typeorm"; // 
 import { AppError } from "../errors/AppError";
 
 export class TransacaoService {
     private repo = AppDataSource.getRepository(Transacao);
+    private tagRepo = AppDataSource.getRepository(Tag); // 🟢 Criamos o repositório de Tags
 
     async criar(dados: any): Promise<Transacao> {
         if (!dados.valor || !dados.categoriaId) {
@@ -14,14 +17,20 @@ export class TransacaoService {
             throw new AppError("O valor da transação deve ser maior que zero", 400);
         }
 
+        let tagsDoBanco: Tag[] = [];
+        if (dados.tags && dados.tags.length > 0) {
+            const ids = dados.tags.map((t: any) => Number(t.id));
+            tagsDoBanco = await this.tagRepo.findBy({ id: In(ids) });
+        }
+
         const transacao = this.repo.create({
             descricao: dados.descricao,
-            valor: dados.valor,
+            valor: Number(dados.valor),
             comprovantePath: dados.comprovantePath,
-            tags: dados.tags,
-            usuario: { id: dados.usuarioId },
-            categoria: { id: dados.categoriaId },
-            data: dados.data || new Date(),
+            tags: tagsDoBanco, // 🟢 Passamos as entidades perfeitas e seguras
+            usuario: { id: Number(dados.usuarioId) },
+            categoria: { id: Number(dados.categoriaId) },
+            data: dados.data ? new Date(dados.data) : new Date(),
         } as Transacao);
 
         return await this.repo.save(transacao);

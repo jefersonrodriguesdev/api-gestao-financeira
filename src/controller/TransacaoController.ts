@@ -15,7 +15,7 @@ export class TransacaoController {
         let tagsFormatadas = [];
         if (req.body.tags) {
             const tagsArray = JSON.parse(req.body.tags);
-            tagsFormatadas = tagsArray.map((id: number) => ({ id }));
+            tagsFormatadas = tagsArray.map((id: any) => ({ id: Number(id) })); // 
         }
         
         const comprovantePath = req.file ? req.file.filename : null;
