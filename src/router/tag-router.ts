@@ -7,9 +7,9 @@ import { tagSchema } from "../schemas/tag-schema";
 const router = Router();
 const controller = new TagController();
 
-router.use(authMiddleware); 
+router.use(authMiddleware);
 
-router.post("/", controller.criar);
+router.post("/seed", controller.seed);
 router.post("/", validate(tagSchema), controller.criar);
 router.get("/", controller.listar);
 

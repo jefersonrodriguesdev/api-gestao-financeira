@@ -22,4 +22,34 @@ export class TagController {
             return res.status(500).json({ error: "Erro ao listar tags" });
         }
     };
+
+    seed = async (req: Request, res: Response) => {
+        try {
+            const etiquetasIniciais = [
+                "Fixa",
+                "Lazer",
+                "Urgente",
+                "Estudos",
+                "Investimento"
+            ];
+
+            const criadas = [];
+
+            for (const nome of etiquetasIniciais) {
+                try {
+                    const novaTag = await this.service.criar(nome);
+                    criadas.push(novaTag);
+                } catch (err) {
+                    continue;
+                }
+            }
+
+            return res.status(201).json({ 
+                message: "Seed de etiquetas realizado com sucesso!", 
+                tags: criadas 
+            });
+        } catch (error: any) {
+            return res.status(500).json({ message: "Erro ao executar o seed: " + error.message });
+        }
+    };
 }

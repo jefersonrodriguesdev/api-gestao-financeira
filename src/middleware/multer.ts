@@ -1,14 +1,22 @@
 import multer from "multer";
 import path from "path";
 import crypto from "crypto";
+import fs from "fs";
+
+const uploadDir = path.resolve(__dirname, "..", "..", "uploads");
+
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, path.resolve(__dirname, "..", "..", "uploads"));
+        cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
         const hash = crypto.randomBytes(16).toString("hex");
-        const filename = `${hash}-${file.originalname}`;
+        const nomeLimpo = file.originalname.replace(/[^a-zA-Z0-9.-]/g, "_");
+        const filename = `${hash}-${nomeLimpo}`;
         cb(null, filename);
     },
 });

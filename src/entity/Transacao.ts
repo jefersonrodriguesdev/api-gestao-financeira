@@ -27,7 +27,7 @@ export class Transacao {
     @ManyToOne(() => Categoria)
     categoria!: Categoria;
 
-    @ManyToMany(() => Tag)
+    @ManyToMany(() => Tag, { cascade: true })
     @JoinTable() 
     tags!: Tag[];
 }

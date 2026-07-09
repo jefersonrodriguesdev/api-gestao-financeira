@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { DataSource } from "typeorm";
 import { Usuario } from "./entity/Usuario";
 import { Categoria } from "./entity/Categoria";
