@@ -1,15 +1,22 @@
 import "reflect-metadata";
 import express from "express";
+import cors from "cors";
 import path from "path";
 import usuarioRouter from "./router/usuario-router";
 import { AppDataSource } from "./data-source";
 import authRouter from "./router/auth-router";
 import transacaoRouter from "./router/transacao-router";
-import categoriaRouter from "./router/categoria-router"; // Espaço removido
+import categoriaRouter from "./router/categoria-router";
 import tagRouter from "./router/tag-router";
 import { errorMiddleware } from "./middleware/error-middleware";
 
 const app = express();
+
+app.use(cors({
+    origin: "*", 
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 app.use(express.json());
 

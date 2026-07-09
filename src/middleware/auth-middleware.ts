@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
-// Esta interface estende o Request do Express para aceitar o campo user tipado
 export interface AuthRequest extends Request {
     user?: {
         id: number;
@@ -10,6 +9,10 @@ export interface AuthRequest extends Request {
 }
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
+    if (req.method === "OPTIONS") {
+        return next();
+    }
+
     const token = req.headers.authorization?.split(' ')[1];
     
     if (!token) {
